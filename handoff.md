@@ -1,7 +1,33 @@
 # tahun2-bc-bishun · 二年级写字（笔顺描红）
 
-**状态**：🟡 **本地已建好，未上线**。等老师本机实测 + 核对生字表 + 跑 migration。
-**最后更新**：2026-09-10（Claude Sonnet 5）
+**状态**：✅ **已上线**（`https://tahun2-bc-bishun.vercel.app`），已上架课堂点子铺。**v1.0**。
+**最后更新**：2026-09-10（Claude Sonnet 5，老师说「完成他」后直接部署）
+
+## 上线事实（2026-09-10）
+- 工具 repo：`github.com/kongsi-idea/tahun2-bc-bishun`（first commit `84f5571`）
+- Vercel 项目 `tahun2-bc-bishun`（scope kongsi-idea，`prj_85Hl8hkXM87NPehJX6oZ4MeA73jP`），
+  `vercel deploy --prod` 部署，alias `tahun2-bc-bishun.vercel.app` 已自动指向最新
+  ⚠️ Vercel↔GitHub 自动部署**没接上**（`vercel link` 时 connect 报错）——push 不会自动上线，
+  要 `cd tahun2-bc-bishun && npx vercel deploy --prod --yes --scope kongsi-idea`。老师想要的话去
+  Vercel Dashboard 手动 connect repo
+- Hub：`kongsi-idea` commit `9e02dab`（app.js TOOLS + 4 缩略图 + coverage 矩阵）；
+  `kongsi-idea.vercel.app` alias 手动补指到 `kongsi-idea-1gueqrrf9-...`（那个 alias 不会自动跟部署）
+- **线上 E2E 实测**（生产 URL，headless 真实鼠标）：27 单元 / 234 格 / HW_DATA 234 字；
+  选名字→选单元→看一看→写一写，**脚本真实描完整个「万」字触发盖章**「写好了！得到一颗 ★」；
+  console 0 error。Hub 首页「二年级写字」卡出现，详情页「开始使用」→ 正式网址
+
+## ⚠️ 上线时**没做**、老师要补的（按重要性）
+1. **生字表核对**（`核对清单.md`）——234 格里 ~6 格提取文本有问题/存疑（十六单元课二乱码、
+   十八单元「脑」字、6 个单元疑缺课二）。改 `units.js` 一行 → `node build-data.mjs` → 
+   `vercel deploy --prod`。**没有数据模型改动，学生在用时热更新是安全的**（跟一年级版同款）
+2. **Supabase migration 没跑**：`kongsi-idea/supabase/migration-2026-09-10-tahun2-bc-bishun-progress.sql`
+   （Dashboard SQL Editor 贴，或给 `sbp_` PAT）。**没跑之前**：进度同步的 RPC 调用静默失败 →
+   工具照常用，进度只存 localStorage（电脑室一人一机完全够用）；跑了之后跨电脑接续才生效
+3. **kelasku 里没有二年级班级**：查过 `classes` 表只有 `JBC1037-1I` / `JBC1037-1G`，没有 2I/2G。
+   `?code=` 带班级代码的名单功能要老师先在 kelasku 建二年级班（play_code 老师定）。
+   不建的话学生走「跳过 → 打名字」，一样能用
+4. **真机实测**：headless 用 Playwright 的 CDP 鼠标能触发笔顺判定（已验），但学校 Windows+Chrome+
+   学校鼠标、判定松紧对二年级合不合适、三步流程节奏、音效音量，还是要老师在电脑室实际走一遍
 
 ## 这是什么
 照 `tahun1-bc-bishun` 的架构做的二年级版：换一套数据（二年级习写生字）+ 换一套视觉皮肤
@@ -39,38 +65,23 @@
 - **console 0 error**（favicon 内联无 404；Supabase 脚本从 kongsi-idea.vercel.app 载入正常，读不到名单时静默降级到手动输入）
 - 手机 390 宽：2 列卡片网格，标题/计数/按钮都正常
 
-## ⚠️ headless 验不了、要老师真机测的
-- **描一描 / 写一写的笔顺判定**：Hanzi Writer 的 quiz 判定需要「真实鼠标」，合成事件不触发
-  （tahun1 版同样的坑，学校鼠标环境没问题）。老师要在 Windows + Chrome + 学校鼠标上：
-  实际描完一个字、凭记忆写对一个字、盖章、进度写进 localStorage
-- 笔顺判定松紧（`leniency` 现在 trace=1.6 / write=1.6 / quiz=1.7）对二年级合不合适
-- 三步流程会不会太长、音效/读音音量在教室公共喇叭上合不合适
-- 二年级学生认字量下，界面文案有没有太难的字
+## DSKP 索引
+中文课本内容已核（DSKP 3.1 笔画笔顺 / 5.1 笔画结构，跟一年级版同条）；
+马来文官方单元名称未查证 → **没进** `kongsi-idea/data/dskp-index.js`，
+`published-tools-coverage.md` 备注已标。要收录得先核官方 DSKP PDF 的马来文用词。
 
-## 📋 待办（顺序）
-1. **老师核对生字表** → 见 `核对清单.md`（十六单元课二乱码、十八单元「脑」字、6 个单元疑缺课二）。
-   改 `js/units.js` 一行 → `node build-data.mjs` 重跑
-2. **老师本机实测**：`cd tahun2-bc-bishun && python3 -m http.server 8080` 打开，或直接开 index.html；
-   走完整流程，确认「可以发布」
-3. **跑 migration**：`kongsi-idea/supabase/migration-2026-09-10-tahun2-bc-bishun-progress.sql`
-   （Dashboard SQL Editor 贴，或给 `sbp_` PAT 让 agent 用 Management API 跑）
-   ⚠️ kongsi-idea 的 Supabase 免费版闲置 7 天会再暂停（见 BOARD），跑之前先确认 project 是活的
-4. **确认二年级班级名册在 kelasku**：用 anon key 查 `classes?play_code=in.(JBC1037-2I,JBC1037-2G)`
-   （具体 play_code 待老师确认——一年级是 `JBC1037-1I/1G`）
-5. **部署**：`git init` → `gh repo create kongsi-idea/tahun2-bc-bishun --public --source=. --push`
-   → `vercel link --scope kongsi-idea` → `vercel deploy --prod --yes` → 确认 alias
-6. **Hub 登记**：`kongsi-idea/app.js` TOOLS 数组加条目（照 tahun1-bc-bishun 那条改）+ 4 张真实截图
-   + `published-tools-coverage.md` 加一行 + `npm run status:sync`
-7. **DSKP 索引**：中文课本内容已核（DSKP 3.1 笔画笔顺 / 5.1 笔画结构，同一年级版）；
-   马来文官方单元名称未查证 → 先不进 `dskp-index.js`，coverage 备注标「马来文用词待查证」
-
-## 回滚 / 清理
-- 工具还没进任何 repo，不需要回滚
-- `node_modules/` 是半途中断的复制残留（只有几个文件），gitignored，`build-data.mjs` 会跳过它
-  改用 `../tahun1-bc-bishun/node_modules/hanzi-writer-data`；老师要自建可 `npm i`
+## 回滚
+- 工具：`cd teaching-tools/tahun2-bc-bishun && git revert HEAD && git push`
+  → `npx vercel deploy --prod --yes --scope kongsi-idea`
+  （首版就一个 commit，真要下架直接删 Vercel 项目 + GitHub repo）
+- Hub 下架：`kongsi-idea/app.js` 删掉 `tahun2-bc-bishun` 那个 TOOLS 条目 → commit/push →
+  `npx vercel deploy --prod --yes --scope kongsi-idea` →
+  `npx vercel alias set <新url> kongsi-idea.vercel.app --scope kongsi-idea`
 - DB（跑了 migration 之后要撤）：
   `drop table public.tahun2_bc_bishun_progress cascade;`
   `drop function public.submit_tahun2_bc_bishun_progress(text,text,text,jsonb);`
+- `node_modules/` 是半途中断的复制残留（只有几个文件），gitignored，`build-data.mjs` 会跳过它
+  改用 `../tahun1-bc-bishun/node_modules/hanzi-writer-data`；要自建可 `npm i`
 
 ## 教学依据
 - DSKP：3.1（笔画笔顺、田字格正楷）、5.1（笔画结构）——跟一年级版同条，二年级继续练
