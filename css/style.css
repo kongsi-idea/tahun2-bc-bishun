@@ -363,6 +363,17 @@ body{
 
 /* ---------- 舞台 / 田字格（全场最大，主角） ---------- */
 .stage{display:flex;flex-direction:column;align-items:center;gap:15px}
+
+/* ---------- 拼音标注（定音词朗读同一份数据来源，见 js/pinyin-data.js） ---------- */
+.pinyin-tag{
+  display:inline-flex;align-items:baseline;gap:8px;
+  padding:6px 18px;border-radius:999px;margin-bottom:-2px;
+  background:linear-gradient(180deg,var(--cream-1),var(--cream-2));
+  box-shadow:0 3px 0 var(--panel-edge-dk),0 6px 12px rgba(58,36,23,.14),inset 0 0 0 2px var(--panel-edge);
+  font-family:var(--font-brush);font-weight:700;font-size:20px;color:var(--ink);
+}
+.pinyin-tag:empty{display:none}
+.pinyin-tag .py{font-family:var(--font-num);font-weight:700;font-size:16px;color:var(--blue-3)}
 .tian{
   position:relative;
   width:min(76vw,min(58vh,470px));height:min(76vw,min(58vh,470px));
